@@ -18,5 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // En estos dos últimos es donde se cruza la lógica (modelo)
       // con los elementos gráficos (vista)
+
+
+      // Es la función que se encarga de actualizar los cambios gráficos
+      // cuando se tocan los botones de borrando o axtualización
+      view.render();
       
 })

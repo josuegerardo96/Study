@@ -1,3 +1,4 @@
+import Alert from './alert.js'
 
 // Se exporta la clase para que la use la vista
 export default class AddTodo{
@@ -7,6 +8,7 @@ export default class AddTodo{
             this.btn = document.getElementById('add');
             this.title = document.getElementById('title');
             this.description = document.getElementById('description');
+            this.alert = new Alert('alert');
       }
 
       // Función que se dispara cuando mandan a llamar el botón desde la función en el view
@@ -14,13 +16,8 @@ export default class AddTodo{
 
             // Dispara el botón
             this.btn.onclick = () => {
-                  if(title.value === '' || description.value === ''){
-                        // Deja de tapar el anuncio de bootstrap de error
-                        // alert.classList.remove('d-none');
-                        // De esta forma entra al texto del elemento
-                        // alert.innerText = 'Title and description required';
-                        // return;
-                        console.error('incorrecto');
+                  if(this.title.value === '' || this.description.value === ''){
+                        this.alert.show('Title and description are requiredd');
                   } else{
                         
                         callback(this.title.value, this.description.value);

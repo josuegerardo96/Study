@@ -5,6 +5,9 @@
 import AddTodo from './components/add-todo.js';
 
 
+// Agrega el modal que no es más que el formulario de edición cuando vamos a editar un elemento
+import Modal from './components/modal.js';
+
 /*
       EL view se encarga de crear modelo, conectar con la tabla y ejercer funciones de 
       eliminar y agregar sobre esta (Dibujando aquí mismo el cómo se verá cada fila de la tabla)
@@ -24,11 +27,17 @@ export default class View{
             // Importación de la clase (y todos los elementos) de addTodo
             this.addTodoForm = new AddTodo();
 
+            // Crea objeto del modal
+            this.modal = new Modal();
+
             // Le pasa a la función que está en add-todo la función que está aquí
             // que se encarga de cargar los elementos
             this.addTodoForm.onClick(
                   (title,description) => this.addTodo(title,description)
             );
+            
+            // CUando se clica en el "save" del formulario se dispara esto
+            this.modal.onClick((id, values) => this.editTodo(id, values));
             
             
       }
@@ -38,6 +47,29 @@ export default class View{
             this.model = model;
       }
 
+
+      // edita los elementos de la fila que se haya editado
+      editTodo(id, values){
+
+            // Hace cambios en la lógica (archivos internos)
+            this.model.editTodo(id,values);
+
+            //Cambios en la vista
+            //Se accede a la fila
+            const row = document.getElementById(id);
+
+            //Cambia los eelmentos de cada parte de la fila
+            row.children[0].innerText = values.title;
+            row.children[1].innerText = values.description;
+            row.children[2].children[0].checked = values.completed;
+            
+      }
+
+      // Actualiza los elementos en el index
+      render(){
+            const todos = this.model.getTodos();
+            todos.forEach((todo) => this.createRow(todo));
+      }
 
       // Carga una constante con el objeto que se crea en modelo
       addTodo(title, description){
@@ -80,9 +112,7 @@ export default class View{
                  
                   </td>
                   <td class="text-right">
-                        <button class="btn btn-primary mb-1">
-                              <i class="fa fa-pencil"></i>
-                        </button>
+
                   </td>
             
             `;
@@ -94,6 +124,20 @@ export default class View{
             checkbox.checked = todo.completed;
             checkbox.onclick = () => this.toggleCompleted(todo.id);
             row.children[2].appendChild(checkbox);
+
+
+            // Creación manual del botón de editado
+            const editBtn = document.createElement('button');
+            editBtn.classList.add('btn','btn-primary','mb-1');
+            editBtn.innerHTML = '<i class="fa fa-pencil"></i>';
+            // Es una forma de decir "Lanza el formulario" y escondelo cuando esté listo
+            editBtn.setAttribute('data-toggle','modal');
+            editBtn.setAttribute('data-target','#modal');
+            
+            // Guarda los cambios en el modelo lógico
+            editBtn.onclick = () => this.modal.setValues(todo);
+            row.children[3].appendChild(editBtn);
+
 
 
 		// Se crea el botón de borrado
