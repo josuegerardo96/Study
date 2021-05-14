@@ -15,6 +15,9 @@ import Modal from './components/modal.js';
 
 
 
+// Importa el apartado de lógica para generar los filtros
+import Filters from './components/filter.js';
+
 
 // Exporta la clase view
 export default class View{
@@ -30,6 +33,9 @@ export default class View{
             // Crea objeto del modal
             this.modal = new Modal();
 
+            // Crea objeto de tipo filtro
+            this.filters = new Filters();
+
             // Le pasa a la función que está en add-todo la función que está aquí
             // que se encarga de cargar los elementos
             this.addTodoForm.onClick(
@@ -38,7 +44,10 @@ export default class View{
             
             // CUando se clica en el "save" del formulario se dispara esto
             this.modal.onClick((id, values) => this.editTodo(id, values));
-            
+
+            // Manda a llamr el filtro cuando se presiona el botón de filtro
+            // Le pasa la función de filtro que está aquí
+            this.filters.onClick((filters) => this.filter(filters));
             
       }
 
@@ -70,6 +79,56 @@ export default class View{
             const todos = this.model.getTodos();
             todos.forEach((todo) => this.createRow(todo));
       }
+
+
+      // FUnción de filtro
+      filter(filters){
+
+            // Guarda en tupla el tipo de filtro y la palabra
+            const {type, words} = filters;
+            
+            // Guarda en una lista el elemento expandido de cada elemento tipo tr de HTML en la tabla
+            const [, ...rows] = this.table.getElementsByTagName('tr');
+
+            // Recorre los elementos en la tabla
+            for (const row of rows){
+
+                  // Guarda en variables los diferentes elementos de cada fila de la tabla
+                  const [title, description, completed] = row.children;
+
+                  // Un booleano para saber que elementos esconder según las opciones
+                  let shouldHide = false;
+
+                  // Sí no está vacío
+                  if(words){
+                        // Si la palabra no está en el título ni en la descripción
+                        shouldHide = !title.innerText.includes(words) && !description.innerText.includes(words);
+                  }
+                  
+                  // Crea una variable que diga que está checada
+                  const shouldBeCompleted = type === 'completed';
+
+                  // Verifica si el botón está completado
+                  const isCompleted = completed.children[0].checked;
+
+                  // Si no es tipo de busqueda "all" y no está checada
+                  if(type !== 'all' && shouldBeCompleted !== isCompleted){
+                        //Esconda
+                        shouldHide = true;
+                  }
+
+                  // Si debe esconder poner encima algo para que tape la vara
+                  if(shouldHide){
+                        row.classList.add('d-none');
+                  }else{
+                        row.classList.remove('d-none');
+                  }
+            }
+            
+      }
+
+
+
 
       // Carga una constante con el objeto que se crea en modelo
       addTodo(title, description){
@@ -135,7 +194,12 @@ export default class View{
             editBtn.setAttribute('data-target','#modal');
             
             // Guarda los cambios en el modelo lógico
-            editBtn.onclick = () => this.modal.setValues(todo);
+            editBtn.onclick = () => this.modal.setValues({
+                  id: todo.id,
+                  title: row.children[0].innerText,
+                  description: row.children[1].innerText,
+                  completed: row.children[2].children[0].checked,
+            });
             row.children[3].appendChild(editBtn);
 
 

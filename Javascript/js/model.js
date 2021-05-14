@@ -47,7 +47,9 @@ export default class model{
 
       // Retorna la lista de elementos
       getTodos(){
-            return this.todos;
+
+            // Esto mapea cada elemento de la lista y devuelve una copia de cada uno
+            return this.todos.map((todo)=> ({...todo}));
       }
 
 
