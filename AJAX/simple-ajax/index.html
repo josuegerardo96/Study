@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Simple AJAX - GET REQUEST</title>
+  </head>
+  <body>
+
+    <button onclick="sendRequest()">
+      Send Ajax Request
+    </button>
+
+    <div id="container"></div>
+
+    <script>
+
+      // Forma de enviar una pregunta al servidor      
+      function sendRequest() {
+        
+        // Se conecta con el servidor
+        var theObject = new XMLHttpRequest();
+        
+        // POST para enviar y GET para recibir
+        theObject.open('POST', 'backend.php', true);
+
+        // Tipo de contenido y la forma en que se va a conectar
+        theObject.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        // actualice el contenedor
+        theObject.onreadystatechange = function() {
+          if(theObject.readyState === 4 & theObject.status === 200) {
+            document.getElementById('container').innerHTML = theObject.responseText;
+          }
+        }
+        
+        // De esta forma envia datos al servidor
+        theObject.send('username=Fazt&password=secret');
+      }
+    </script>
+  </body>
+</html>
